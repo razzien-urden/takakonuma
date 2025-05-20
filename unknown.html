@@ -1,61 +1,54 @@
 <!DOCTYPE html><html lang='ja'><head><meta charset='UTF-8'><title>不明</title>
 <style>
-  body { margin:0; padding:40px; background: linear-gradient(180deg, #0a0a0a, #000); color:#ccc; font-family:'Courier New', monospace; }
-  h1.title { font-size:3em; color:#cc0033; text-shadow:0 0 8px #660000; animation: titleGlitch 2s infinite; }
-  @keyframes titleGlitch { 0%,100%{text-shadow:2px 0 #ff5555,-2px 0 #880000;}50%{text-shadow:-2px 0 #ff5555,2px 0 #880000;} }
-  a { color:#00ff66; text-decoration:none; } a:hover { text-decoration:underline; }
-  ul { margin:20px 0; padding-left:20px; }
-  li { margin:8px 0; }
-  .center { text-align:center; }
-  .input { display:flex; justify-content:center; margin:20px 0; }
-  .input input { padding:10px; width:300px; background:#111; color:#eee; border:1px solid #444; }
-  .input button { margin-left:10px; padding:10px 20px; background:#cc0033; color:#fff; border:none; cursor:pointer; }
-  img { max-width:100%; margin:20px auto; display:block; border:2px solid #550000; box-shadow:0 0 10px #880000; }
-  audio { display:none; }
-  pre { background:#111; padding:20px; border-left:4px solid #550000; white-space:pre-wrap; }
-  p.jpn { font-size:0.9em; color:#666; font-style:italic; margin:5px 0; }
+body { margin:0; padding:40px; background:linear-gradient(180deg,#0a0a0a,#000); color:#ccc; font-family:'Courier New', monospace; }
+h1.title { font-size:3em; color:#cc0033; text-shadow:0 0 8px #660000; animation:titleGlitch 2s infinite; }
+@keyframes titleGlitch { 0%,100%{text-shadow:2px 0 #ff5555,-2px 0 #880000;}50%{text-shadow:-2px 0 #ff5555,2px 0 #880000;} }
+a { color:#00ff66; text-decoration:none; } a:hover{text-decoration:underline;}
+ul { margin:20px 0; padding-left:20px; }
+li { margin:8px 0; }
+.center { text-align:center; }
+.input-btn { display:flex; justify-content:center; margin:30px 0; }
+.input-btn button { font-size:1.5em; padding:16px 32px; background:#00ff66; color:#000; border:none; border-radius:4px; cursor:pointer; }
+img { max-width:100%; display:block; margin:20px auto; border:2px solid #550000; box-shadow:0 0 10px #880000; }
+audio { display:none; }
+pre { background:#111; padding:20px; border-left:4px solid #550000; white-space:pre-wrap; }
+p.jpn { font-size:0.9em; color:#888; margin:5px 0; }
 </style>
-</head><body><audio id="bg" autoplay loop preload="auto"><source src="ring_theme.mp3" type="audio/mpeg"></audio>
-<h1 class="center">不明</h1>
-<pre>
-ERROR: UNRECOGNIZED EXTENSION
-</pre>
-
+</head><body><audio id="bg" autoplay loop preload="auto"><source src="ring_theme.mp3" type="audio/mpeg"></audio><h1 class='center'>不明</h1><pre>ERROR: UNRECOGNIZED EXTENSION</pre>
 <script>
 (function(){
   const chars="!@#$%^&*()_+=-{}[]:;<>,.?/\\|~アイウエオカキクケコサ";
-  let interval = 5000;
-  let glitchInterval;
-  const startGlitch = () => {
-    glitchInterval = setInterval(() => {
-      const els = Array.from(document.querySelectorAll('h1:not(.title), p, li'))
-        .filter(e => !e.querySelector('a'));
-      if(els.length){
-        const el = els[Math.floor(Math.random() * els.length)];
-        const txt = el.innerText.split('');
-        let i=0;
-        const iv = setInterval(()=>{
+  let interval=4000;
+  function startGlitch(){
+    setInterval(()=>{
+      const elems = Array.from(document.querySelectorAll('h1:not(.title), p, li'))
+        .filter(e=>!e.closest('a'));
+      if(elems.length){
+        const el=elems[Math.floor(Math.random()*elems.length)];
+        const txt=el.innerText.split(''), len=txt.length; let i=0;
+        const iv=setInterval(()=>{
           el.innerText = txt.map((c,j)=> j<i?c:chars[Math.floor(Math.random()*chars.length)]).join('');
-          if(i++>=txt.length){ clearInterval(iv); el.innerText = txt.join(''); }
+          if(i++>=len){ clearInterval(iv); el.innerText=txt.join(''); }
         },30);
       }
     }, interval);
-  };
-  const ramp = () => {
-    clearInterval(glitchInterval);
-    if(interval > 1500){
-      interval = interval * 0.6;
-      startGlitch();
-      setTimeout(ramp, 30000);
-    }
-  };
-  document.addEventListener('DOMContentLoaded', ()=>{ startGlitch(); setTimeout(ramp, 30000); });
+  }
+  document.addEventListener('DOMContentLoaded', ()=>{
+    startGlitch();
+    setTimeout(()=>{ interval=2000; startGlitch(); }, 30000);
+    setTimeout(()=>{ interval=1000; startGlitch(); }, 60000);
+    setTimeout(()=>{
+      const flash=document.createElement('div');
+      Object.assign(flash.style,{
+        position:'fixed',top:0,left:0,width:'100vw',height:'100vh',
+        background:"black url('images/face.png') center/cover no-repeat",
+        opacity:0.85,zIndex:9999
+      });
+      document.body.appendChild(flash);
+      setTimeout(()=>flash.remove(),1200);
+    },7000);
+  });
   document.addEventListener('click', ()=>{ document.getElementById('bg').play().catch(()=>{}); }, { once:true });
-  setTimeout(()=>{ const f=document.createElement('div');
-    Object.assign(f.style,{position:'fixed',top:0,left:0,width:'100vw',height:'100vh',
-      background:"black url('images/face.png') center/cover no-repeat",opacity:0.85,zIndex:9999});
-    document.body.appendChild(f); setTimeout(()=>f.remove(),1200);
-  },7000);
 })();
 </script>
 </body></html>
