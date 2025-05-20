@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang='ja'><head><meta charset='UTF-8'><title>印分析</title>
 <style>
-body { margin:0; padding:40px; background:linear-gradient(180deg,#0a0a0a,#000); color:#ccc; font-family:'Courier New', monospace; }
+body { margin:0; padding:40px; background:linear-gradient(180deg,#0a0a0a,#000); color:#ccc; font-family:'Courier New',monospace; }
 h1.title { font-size:3em; color:#cc0033; text-shadow:0 0 8px #660000; animation:titleGlitch 2s infinite; }
 @keyframes titleGlitch { 0%,100%{text-shadow:2px 0 #ff5555,-2px 0 #880000;}50%{text-shadow:-2px 0 #ff5555,2px 0 #880000;} }
 a { color:#00ff66; text-decoration:none; } a:hover{text-decoration:underline;}
@@ -25,33 +25,35 @@ runes awaken
 (function(){
   const chars="!@#$%^&*()_+=-{}[]:;<>,.?/\\|~アイウエオカキクケコサ";
   let interval=4000;
+  function doGlitch(){
+    const candidates = Array.from(document.querySelectorAll('h1:not(.title), p, pre'))
+      .filter(el => el.children.length === 0 && !el.closest('a'));
+    if(!candidates.length) return;
+    const el = candidates[Math.floor(Math.random()*candidates.length)];
+    const textArr = el.innerText.split(''), len = textArr.length;
+    let i = 0;
+    const iv = setInterval(()=>{
+      el.innerText = textArr.map((c,j)=> j<i?c:chars[Math.floor(Math.random()*chars.length)]).join('');
+      if(i++ >= len){ clearInterval(iv); el.innerText = textArr.join(''); }
+    },30);
+  }
   function startGlitch(){
-    setInterval(()=>{
-      const elems = Array.from(document.querySelectorAll('h1:not(.title), p, li'))
-        .filter(e=>!e.closest('a'));
-      if(elems.length){
-        const el=elems[Math.floor(Math.random()*elems.length)];
-        const txt=el.innerText.split(''), len=txt.length; let i=0;
-        const iv=setInterval(()=>{
-          el.innerText = txt.map((c,j)=> j<i?c:chars[Math.floor(Math.random()*chars.length)]).join('');
-          if(i++>=len){ clearInterval(iv); el.innerText=txt.join(''); }
-        },30);
-      }
-    }, interval);
+    setInterval(doGlitch, interval);
   }
   document.addEventListener('DOMContentLoaded', ()=>{
     startGlitch();
-    setTimeout(()=>{ interval=2000; startGlitch(); }, 30000);
-    setTimeout(()=>{ interval=1000; startGlitch(); }, 60000);
+    setTimeout(()=>{ interval = 2000; startGlitch(); }, 30000);
+    setTimeout(()=>{ interval = 1000; startGlitch(); }, 60000);
+    // visual jump scare
     setTimeout(()=>{
-      const flash=document.createElement('div');
-      Object.assign(flash.style,{
-        position:'fixed',top:0,left:0,width:'100vw',height:'100vh',
+      const f = document.createElement('div');
+      Object.assign(f.style, {
+        position:'fixed', top:0, left:0, width:'100vw', height:'100vh',
         background:"black url('images/face.png') center/cover no-repeat",
-        opacity:0.85,zIndex:9999
+        opacity:0.85, zIndex:9999
       });
-      document.body.appendChild(flash);
-      setTimeout(()=>flash.remove(),1200);
+      document.body.appendChild(f);
+      setTimeout(()=>f.remove(),1200);
     },7000);
   });
   document.addEventListener('click', ()=>{ document.getElementById('bg').play().catch(()=>{}); }, { once:true });
